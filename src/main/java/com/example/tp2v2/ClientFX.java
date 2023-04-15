@@ -25,7 +25,7 @@ public class ClientFX extends Application {
         HBox root = new HBox();
         Scene scene = new Scene(root, 525, 475);
         stage.setTitle("Inscription UdeM");
-
+//commentaire important
         VBox gauche = new VBox();
         Separator separator = new Separator();
         separator.setOrientation(Orientation.VERTICAL);
