@@ -2,15 +2,11 @@ package com.example.tp2v2;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.geometry.Insets;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -18,12 +14,19 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import server.models.Course;
+import server.models.RegistrationForm;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.util.ArrayList;
 
 
 public class ClientFX extends Application {
-    private String contenuPrenom;
+    public static ArrayList<Course> listeCourse = new ArrayList<Course>();
+    public final static String REGISTER_COMMAND = "INSCRIRE";
+    public final static String LOAD_COMMAND = "CHARGER";
     @Override
     public void start(Stage stage) throws IOException {
         HBox root = new HBox();
@@ -89,7 +92,7 @@ public class ClientFX extends Application {
 
         envoyerInfo.setOnAction((event) -> {
 
-            Inscription();
+            Inscription(infoPrenom.getText(), infoNom.getText(), infoEmail.getText(), infoMatricule.getText());
         });
 
         stage.show();
@@ -100,16 +103,47 @@ public class ClientFX extends Application {
     {
         try
         {
+            Socket clientSocket = new Socket("127.0.0.1", 1337);
+            ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream());
+            os.writeObject(LOAD_COMMAND + " " + session);
             System.out.println(session);
+            ObjectInputStream is = new ObjectInputStream(clientSocket.getInputStream());
+            listeCourse = (ArrayList<Course>) is.readObject();
         }
         catch (NullPointerException ex)
         {//Aucune session choisit
             ex.printStackTrace();
         }
+        catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        catch (ClassNotFoundException ex)
+        {
+            ex.printStackTrace();
+        }
     }
-    private void Inscription()
+    private void Inscription(String prenom, String nom, String email, String matricule)
     {
-        System.out.println("Envoying");
+        try
+        {
+            Course cours = listeCourse.get(0);
+            RegistrationForm coursInscrit = new RegistrationForm(prenom, nom, email, matricule, cours);
+
+            Socket clientSocket = new Socket("127.0.0.1", 1337);
+            ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream());
+            os.writeObject(REGISTER_COMMAND + " ");
+            os.flush();
+            os.writeObject(coursInscrit);
+        }
+        catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        catch (ArrayIndexOutOfBoundsException ex)
+        {
+            System.out.println("No session selected");
+        }
     }
 
     public static void main(String[] args) {

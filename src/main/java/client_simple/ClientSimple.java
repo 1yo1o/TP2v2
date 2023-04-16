@@ -70,6 +70,7 @@ public class ClientSimple
             os.flush();
             ObjectInputStream is = new ObjectInputStream(clientSocket.getInputStream());
             listeCourse = (ArrayList<Course>) is.readObject();
+            is.close();
             VoireCoursOffert(Session[input - 1]);
         }
         catch (InputMismatchException ex)
