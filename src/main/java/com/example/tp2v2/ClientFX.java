@@ -2,6 +2,8 @@ package com.example.tp2v2;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -19,13 +21,14 @@ import server.models.Course;
 
 import java.io.IOException;
 
+
 public class ClientFX extends Application {
+    private String contenuPrenom;
     @Override
     public void start(Stage stage) throws IOException {
         HBox root = new HBox();
         Scene scene = new Scene(root, 525, 475);
         stage.setTitle("Inscription UdeM");
-//commentaire important
         VBox gauche = new VBox();
         Separator separator = new Separator();
         separator.setOrientation(Orientation.VERTICAL);
@@ -77,80 +80,36 @@ public class ClientFX extends Application {
         froIns.setTextAlignment(TextAlignment.CENTER);
         droite.getChildren().addAll(froIns, gridPane);
 
-
+        chargerCours.setOnAction((event) ->
+        {
+            //String a = infoPrenom.getText();
+            ChargerCours(cb.getValue().toString());
+        });
         stage.setScene(scene);
 
+        envoyerInfo.setOnAction((event) -> {
+
+            Inscription();
+        });
+
         stage.show();
-        /*
-        HBox root = new HBox();
-
-        Scene scene = new Scene(root, 1000, 750);
-        ClientFX.class.getResource("hello-view.fxml");
-        stage.setTitle("Inscription UdeM");
-
-        VBox gauche = new VBox();
-
-        VBox liste = new VBox();
-        Text texte1 = new Text("Liste des cours");
-        liste.getChildren().add(texte1);
-
-        VBox selection = new VBox();
-
-        HBox categorie = new HBox();
-        Text texte2 = new Text("Code");
-        Text texte3 = new Text("Cours");
-        categorie.getChildren().add(texte2);
-        categorie.getChildren().add(new Separator());
-        categorie.getChildren().add(texte3);
-
-        selection.getChildren().add(categorie);
-        categorie.getChildren().add(new Text("Coming soon ;)"));
-        gauche.getChildren().add(selection);
-        gauche.getChildren().add(new Separator());
-
-        HBox bas = new HBox();
-        bas.getChildren().add(new Text("Coming Soon :O"));
-        Button charger = new Button("Charger");
-        bas.getChildren().add(charger);
-        gauche.getChildren().add(bas);
-
-        root.getChildren().add(gauche);
-        root.getChildren().add(new Separator());
 
 
-        VBox droite = new VBox();
-        Text texte4 = new Text("Formulaire d'inscription");
-        droite.getChildren().add(texte4);
-
-        VBox information = new VBox();
-        HBox prenom = new HBox();
-        Text texte5 = new Text("Prénom");
-        prenom.getChildren().add(texte5);
-
-        HBox nom = new HBox();
-        Text texte6 = new Text("Nom");
-        prenom.getChildren().add(texte6);
-
-        HBox email = new HBox();
-        Text texte7 = new Text("Email");
-        prenom.getChildren().add(texte7);
-
-        HBox matricule = new HBox();
-        Text texte8 = new Text("Matricule");
-        prenom.getChildren().add(texte8);
-
-        information.getChildren().add(prenom);
-        information.getChildren().add(nom);
-        information.getChildren().add(email);
-        information.getChildren().add(matricule);
-        root.getChildren().add(information);
-
-        root.getChildren().add(droite);
-        root.setAlignment(Pos.CENTER);
-        root.setSpacing(10);
-        stage.setScene(scene);
-        stage.show();
-        */
+    }
+    private void  ChargerCours(String session)
+    {
+        try
+        {
+            System.out.println(session);
+        }
+        catch (NullPointerException ex)
+        {//Aucune session choisit
+            ex.printStackTrace();
+        }
+    }
+    private void Inscription()
+    {
+        System.out.println("Envoying");
     }
 
     public static void main(String[] args) {
