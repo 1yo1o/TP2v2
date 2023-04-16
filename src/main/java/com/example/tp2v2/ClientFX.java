@@ -32,7 +32,7 @@ public class ClientFX extends Application {
     public static TableView tableView;
     public final static String REGISTER_COMMAND = "INSCRIRE";
     public final static String LOAD_COMMAND = "CHARGER";
-    public static String listeErreur;
+    public static ArrayList<String> listeErreur = new ArrayList<>();
     @Override
     public void start(Stage stage) throws IOException {
         HBox root = new HBox();
@@ -124,7 +124,6 @@ public class ClientFX extends Application {
             Socket clientSocket = new Socket("127.0.0.1", 1337);
             ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream());
             os.writeObject(LOAD_COMMAND + " " + session);
-            System.out.println(session);
             ObjectInputStream is = new ObjectInputStream(clientSocket.getInputStream());
             listeCourse = (ArrayList<Course>) is.readObject();
         }
@@ -143,12 +142,23 @@ public class ClientFX extends Application {
         {
             Course cours = listeCourse.get(index);
             RegistrationForm coursInscrit = new RegistrationForm(prenom, nom, email, matricule, cours);
+            VerifierInfo(email, matricule);
+            if(listeErreur.size() == 0)
+            {
+                Socket clientSocket = new Socket("127.0.0.1", 1337);
+                ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream());
+                os.writeObject(REGISTER_COMMAND + " ");
+                os.flush();
+                os.writeObject(coursInscrit);
+                String message = "Felicitation! "+prenom+" "+nom+" est inscrit(e) avec succès pour le cours "+cours.getCode()+"!";
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
+                alert.showAndWait();
+            }
+            else
+            {
+                AfficherErreur();
+            }
 
-            Socket clientSocket = new Socket("127.0.0.1", 1337);
-            ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream());
-            os.writeObject(REGISTER_COMMAND + " ");
-            os.flush();
-            os.writeObject(coursInscrit);
         }
         catch (IOException ex)
         {
@@ -173,6 +183,47 @@ public class ClientFX extends Application {
         tableView.getItems().addAll(items);
         tableView.refresh();
         return tableView;
+    }
+    private void AfficherErreur()
+    {
+        String messageTotal = "";
+        for(int i = 0; i< listeErreur.size(); ++i)
+        {
+            messageTotal += listeErreur.get(i);
+        }
+        Alert alert = new Alert(Alert.AlertType.ERROR, messageTotal, ButtonType.OK);
+        alert.showAndWait();
+    }
+    private void VerifierInfo(String email, String matricule)
+    {
+        String verificationEmail = "@gmail.com";
+        int longeurEmail = email.length();
+        int longeurverif = verificationEmail.length();
+        boolean valide = true;
+        for(int i = 0; i<longeurverif; ++i)
+        {
+            valide = valide && (verificationEmail.charAt(i) == email.charAt(longeurEmail-longeurverif+i));
+        }
+        if(!valide)
+        {
+            listeErreur.add("Le formulaire est invalide.\nLe champ'Email' est invalide!\nAssurer vous que le email finisse par @gmail.com.");
+        }
+        if(!matricule.matches("\\d+"))
+        {
+            if(listeErreur.size() == 0)
+            {
+                listeErreur.add("Le formulaire est invalide.\n");
+            }
+            listeErreur.add("Le champ'Matricule' est invalide!\nAssurer vous que la matricule ne contienne que des chiffres.");
+        }
+        if(matricule.length() != 8)
+        {
+            if(listeErreur.size() == 0)
+            {
+                listeErreur.add("Le formulaire est invalide.\n");
+            }
+            listeErreur.add("Le champ'Matricule' est invalide!\nAssurer vous que la matricule contienne exactement 8 chiffres.");
+        }
     }
 
     public static void main(String[] args) {
