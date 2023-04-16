@@ -107,9 +107,10 @@ public class ClientFX extends Application {
         });
         stage.setScene(scene);
 
-        envoyerInfo.setOnAction((event) -> {
-
-            Inscription(infoPrenom.getText(), infoNom.getText(), infoEmail.getText(), infoMatricule.getText(),0);
+        envoyerInfo.setOnAction((event) ->
+        {
+            int index = tableView.getSelectionModel().selectedIndexProperty().get();
+            Inscription(infoPrenom.getText(), infoNom.getText(), infoEmail.getText(), infoMatricule.getText(),index);
         });
 
         stage.show();
