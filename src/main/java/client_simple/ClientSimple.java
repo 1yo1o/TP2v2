@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 public class ClientSimple
 {
+
     public final static int PORT = 1337;
     public static ArrayList<Course> listeCourse = new ArrayList<Course>();
     public final static String[] Session = new String[3];
