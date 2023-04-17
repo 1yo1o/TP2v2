@@ -96,7 +96,7 @@ public class Server {
     {
         try
         {
-            File texte = new File("/Users/alexandrecharland/Desktop/Université/Session2/prog/TP2v2/src/main/java/server/data/cours.txt");
+            File texte = new File("./src/main/java/server/data/cours.txt");
             Scanner scanner = new Scanner(texte);
             ArrayList<Course> listeCourSession = new ArrayList<Course>();
             while(scanner.hasNextLine())
@@ -130,7 +130,7 @@ public class Server {
         try
         {
             RegistrationForm nouvelleInscription = (RegistrationForm) objectInputStream.readObject();
-            File texte = new File("/Users/alexandrecharland/Desktop/Université/Session2/prog/TP2v2/src/main/java/server/data/inscription.txt");
+            File texte = new File("./src/main/java/server/data/inscription.txt");
             // /inscription.txt pourrait fonctionner si inscription.txt est dans le même fichier (package?)
             FileOutputStream fos = new FileOutputStream(texte, true);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
