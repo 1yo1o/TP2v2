@@ -1,4 +1,4 @@
-package com.example.tp2v2;
+package client_fx;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -226,7 +226,8 @@ public class ClientFX extends Application {
         }
     }
 
-    public static void main(String[] args) {
+    public static void applicationLauch()
+    {
         launch();
     }
 }

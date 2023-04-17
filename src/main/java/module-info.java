@@ -3,6 +3,6 @@ module com.example.tp2v2 {
     requires javafx.fxml;
 
 
-    opens com.example.tp2v2 to javafx.fxml;
-    exports com.example.tp2v2;
+    opens client_fx to javafx.fxml;
+    exports client_fx;
 }

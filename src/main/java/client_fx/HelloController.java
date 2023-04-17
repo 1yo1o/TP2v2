@@ -1,4 +1,4 @@
-package com.example.tp2v2;
+package client_fx;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
