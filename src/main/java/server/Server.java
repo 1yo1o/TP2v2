@@ -7,19 +7,40 @@ import server.models.RegistrationForm;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class Server {
+    /**
+     * Constante qui représente la commande pour inscrire un cour.
+     */
 
     public final static String REGISTER_COMMAND = "INSCRIRE";
+    /**
+     * Constante qui représente la commande pour charger la liste des cours disponnibles.
+     */
     public final static String LOAD_COMMAND = "CHARGER";
+    /**
+     * Socket du server, facilite dans la manipulation du transfert d'objet
+     */
     private final ServerSocket server;
+    /**
+     * Socket du client, facilite dans la manipulation du transfert d'objet
+     */
     private Socket client;
+    /**
+     * Facilite dans la manipulation du transfert d'objet
+     */
     private ObjectInputStream objectInputStream;
+    /**
+     * Facilite dans la manipulation du transfert d'objet
+     */
     private ObjectOutputStream objectOutputStream;
+    /**
+     * Facilite la dissection de la commande envoyé.
+     */
     private final ArrayList<EventHandler> handlers;
 
     public Server(int port) throws IOException {
@@ -38,6 +59,9 @@ public class Server {
         }
     }
 
+    /**
+     * Boucle principale du serveur. Elle s'occupe d'acceuillir les clients et de les referer au bonne fonction pour traité leurs demmandes.
+     */
     public void run() {
         while (true) {
             try {
@@ -54,6 +78,11 @@ public class Server {
         }
     }
 
+    /**
+     * Cette fonction attend la commende du client et la traduit
+     * @throws IOException Si le client n'envoit pas la bonne chose
+     * @throws ClassNotFoundException Si le client n'envoit pas la bonne chose
+     */
     public void listen() throws IOException, ClassNotFoundException {
         String line;
         if ((line = this.objectInputStream.readObject().toString()) != null) {
@@ -64,6 +93,11 @@ public class Server {
         }
     }
 
+    /**
+     * Cette fonction traduit la ligne de commande envoier.
+     * @param line Un string représentant la ligne a traduire.
+     * @return Retourne la commande et un argument.
+     */
     public Pair<String, String> processCommandLine(String line) {
         String[] parts = line.split(" ");
         String cmd = parts[0];
@@ -71,12 +105,21 @@ public class Server {
         return new Pair<>(cmd, args);
     }
 
+    /**
+     * Cette fonction déconnecte le client du serveur
+     * @throws IOException Si jamais un telle chose est impossible
+     */
     public void disconnect() throws IOException {
         objectOutputStream.close();
         objectInputStream.close();
         client.close();
     }
 
+    /**
+     * Cette fonction va appliquer la ligne de commande qui lui a été envoyé.
+     * @param cmd Un string représentant la commande a executer.
+     * @param arg Un string représentant l'argument de la fonction.
+     */
     public void handleEvents(String cmd, String arg) {
         if (cmd.equals(REGISTER_COMMAND)) {
             handleRegistration();
@@ -131,15 +174,18 @@ public class Server {
         {
             RegistrationForm nouvelleInscription = (RegistrationForm) objectInputStream.readObject();
             File texte = new File("./src/main/java/server/data/inscription.txt");
-            // /inscription.txt pourrait fonctionner si inscription.txt est dans le même fichier (package?)
             FileOutputStream fos = new FileOutputStream(texte, true);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            Course coursIncrit = nouvelleInscription.getCourse();
-            oos.writeObject(coursIncrit.getSession() + "\t" + coursIncrit.getCode() + "\t"
+
+            OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+            Course coursInscrit = nouvelleInscription.getCourse();
+            String message = coursInscrit.getSession() + "\t" + coursInscrit.getCode() + "\t"
                     + nouvelleInscription.getMatricule() + "\t" + nouvelleInscription.getPrenom()
-                    + "\t" + nouvelleInscription.getNom() + "\t" + nouvelleInscription.getEmail() + "\n");
-            oos.flush();
-            oos.close();
+                    + "\t" + nouvelleInscription.getNom() + "\t" + nouvelleInscription.getEmail() + "\n";
+            BufferedWriter writer = new BufferedWriter(osw);
+            writer.append(message);
+            writer.flush();
+            writer.close();
+
         }
         catch (IOException ex)
         {

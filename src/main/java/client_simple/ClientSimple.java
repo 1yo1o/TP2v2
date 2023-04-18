@@ -18,11 +18,11 @@ public class ClientSimple
     /**
      * liste qui contient les cours de la session choisit.
      */
-    public static ArrayList<Course> listeCourse = new ArrayList<Course>();
+    private static ArrayList<Course> listeCourse = new ArrayList<Course>();
     /**
      * Tableau contenant les string des choix possibles de session
      */
-    public final static String[] Session = new String[3];
+    private final static String[] Session = new String[3];
     /**
      * Constante qui représente la commande pour inscrire un cour au serveur.
      */
@@ -34,7 +34,7 @@ public class ClientSimple
     /**
      * Un scanner qui reçoit les input de l'utilisateur
      */
-    public final static Scanner scanner = new Scanner(System.in);
+    private final static Scanner scanner = new Scanner(System.in);
 
     /**
      * La fonction main initialise le tableau session commence le processus d'inscirption.
@@ -147,7 +147,7 @@ public class ClientSimple
     /**
      * La fonction InscriptionCours va questionner l'utilisateur de l'information et si le cours fait partie des options inscrire l'utilisateur.
      * Autrement il retournera à la fonction VoireCoursOffert.
-     * @param indexCours Une liste de nombre naturel qui indique l'indexx des cours qui sont offerte dans la session désirer parmis la liste total.
+     * @param indexCours Une liste de nombre naturel qui indique l'index des cours qui sont offerte dans la session désirer parmis la liste total.
      * @param session Un string qui contient la session choisit.
      */
     private static void InscriptionCours(ArrayList<Integer> indexCours, String session)
@@ -157,19 +157,22 @@ public class ClientSimple
             System.out.println();
             String prenom = SaisieGénérale("prénom");
             String nom = SaisieGénérale("nom");
-            String email = SaisieEmail(session);
+            String email = SaisieEmail();
             if(email == null)
             {
+                VoireCoursOffert(session);
                 return;
             }
-            String matricule = SaisieMatricule(session);
+            String matricule = SaisieMatricule();
             if(matricule == null)
             {
+                VoireCoursOffert(session);
                 return;
             }
-            Course cours = SaisieCours(indexCours, session);
+            Course cours = SaisieCours(indexCours);
             if(cours == null)
             {
+                VoireCoursOffert(session);
                 return;
             }
             RegistrationForm coursInscrit = new RegistrationForm(prenom, nom, email, matricule, cours);
@@ -198,7 +201,13 @@ public class ClientSimple
         String input = scanner.nextLine();
         return input;
     }
-    private static String SaisieEmail(String session)
+
+    /**
+     * Cette fonction demmande le email à l'utilisateur. Si le courriel fini par @gmail.com alors il retournera l'input de l'utilisateur.
+     * Autrement, il retournera null.
+     * @return un string contenant le email si tout est valide ou null sinon.
+     */
+    private static String SaisieEmail()
     {
         String verificationEmail = "@gmail.com";
         int longeurverif = verificationEmail.length();
@@ -210,7 +219,6 @@ public class ClientSimple
         {
             System.out.println("Le email entré n'est pas valide");
             System.out.println();
-            VoireCoursOffert(session);
             return null;
         }
         for(int i = 0; i<longeurverif; ++i)
@@ -221,12 +229,17 @@ public class ClientSimple
         {
             System.out.println("Le email entré n'est pas valide");
             System.out.println();
-            VoireCoursOffert(session);
             return null;
         }
         return input;
     }
-    private static String SaisieMatricule(String session)
+
+    /**
+     * Cette fonction demmande à l'utilisteur son numéro de matricule. Si le numero est valide (exactement 8 chiffres), elle retournera le numéro.
+     * Autrement elle retournera null.
+     * @return le chiffre entré par l'utilisateur s'il est valide, null sinon.
+     */
+    private static String SaisieMatricule()
     {
         System.out.print("Veuillez saisir votre matricule: ");
         String input = scanner.nextLine();
@@ -234,12 +247,17 @@ public class ClientSimple
         {
             System.out.println("La matricule entré n'est pas valide");
             System.out.println();
-            VoireCoursOffert(session);
             return null;
         }
         return input;
     }
-    private static Course SaisieCours(ArrayList<Integer> indexCours, String session)
+
+    /**
+     * Cette fonction vérifie que le cours reçu soit dans la liste et le retourne. Si ce n'est pas le cas il retourne null
+     * @param indexCours Une liste de nombre naturel qui indique l'indexx des cours qui sont offerte dans la session désirer parmis la liste total.
+     * @return Un Course si le cours l'input de l'utilisateur est dans la liste, sinon null.
+     */
+    private static Course SaisieCours(ArrayList<Integer> indexCours)
     {
         System.out.print("Veuillez saisir le code du cours: ");
         String input = scanner.nextLine();
@@ -252,7 +270,6 @@ public class ClientSimple
         }
         System.out.println("Le code entré ne fais pas partie des cours disponible pour la session");
         System.out.println();
-        VoireCoursOffert(session);
         return null;
     }
 }

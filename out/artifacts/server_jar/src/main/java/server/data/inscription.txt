@@ -1,0 +1,2 @@
+Automne	IFT1015	12345678	alex	charland	alex@gmail.com
+Ete	IFT2256	20243623	alexandre	charland	alexandre@gmail.com

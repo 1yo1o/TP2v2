@@ -28,11 +28,36 @@ import java.util.Map;
 
 
 public class ClientFX extends Application {
-    public static ArrayList<Course> listeCourse = new ArrayList<Course>();
-    public static TableView tableView;
+    /**
+     * Une liste de cours disponnible
+     */
+    private static ArrayList<Course> listeCourse = new ArrayList<Course>();
+    /**
+     * Facilite la manipulation du contenue dans la table
+     */
+    private static TableView tableView;
+    /**
+     * Constante qui représente la commande pour inscrire un cour au serveur.
+     */
     public final static String REGISTER_COMMAND = "INSCRIRE";
+    /**
+     * Constante qui représente la commande pour charger les cours au serveur.
+     */
     public final static String LOAD_COMMAND = "CHARGER";
-    public static ArrayList<String> listeErreur = new ArrayList<>();
+    /**
+     * Une liste contenant tous les erreurs rencontrées lors de l'execution d'une commande.
+     */
+    private static ArrayList<String> listeErreur = new ArrayList<>();
+    /**
+     * Une variable booléaine qui sert a savoir si le textField doivent être effacé ou non.
+     */
+    private static boolean effaceInfo = true;
+
+    /**
+     * Créer l'interface au complet
+     * @param stage Une classe de type stage
+     * @throws IOException permet au fonction ultérieure de traiter le problème.
+     */
     @Override
     public void start(Stage stage) throws IOException {
         HBox root = new HBox();
@@ -103,7 +128,6 @@ public class ClientFX extends Application {
         {
             ChargerCours(cb.getValue().toString());
             tableView = Update(tableView);
-            //String a = infoPrenom.getText();
         });
         stage.setScene(scene);
 
@@ -111,12 +135,23 @@ public class ClientFX extends Application {
         {
             int index = tableView.getSelectionModel().selectedIndexProperty().get();
             Inscription(infoPrenom.getText(), infoNom.getText(), infoEmail.getText(), infoMatricule.getText(),index);
+            if(effaceInfo)
+            {
+                infoPrenom.clear();
+                infoNom.clear();
+                infoEmail.clear();
+                infoMatricule.clear();
+            }
+
         });
 
         stage.show();
-
-
     }
+
+    /**
+     * Cette fonction sera appeler pour charger les cours d'une session désirée. Elle communique avec le serveur pour obtenir l'information necessaire.
+     * @param session Un string indiquant quelle sesion doit être charger.
+     */
     private void  ChargerCours(String session)
     {
         try
@@ -136,6 +171,17 @@ public class ClientFX extends Application {
             ex.printStackTrace();
         }
     }
+
+    /**
+     * Cette fonction va tenter d'inscrire l'utilisateur à un cour. L'inscription ne se fera pas si l'une des conditions suivante n'est pas respecter.
+     * Un cour a été selectionné, l'email fini par @gmail.com et la matricule est composé d'exactement 8 chiffres.
+     * La fonction affichera un message a l'utilisateur pour lui informer du success ou non de l'opération.
+     * @param prenom Une string représentant le prénom entré par l'utilisateur.
+     * @param nom Une string représentant le nom entré par l'utilisateur.
+     * @param email Une string représentant le email entré par l'utilisateur.
+     * @param matricule Une string représentant la matricule entré par l'utilisateur.
+     * @param index Un int représentant l'index du cours désiré par l'utilisateur.
+     */
     private void Inscription(String prenom, String nom, String email, String matricule, int index)
     {
         try
@@ -153,9 +199,11 @@ public class ClientFX extends Application {
                 String message = "Felicitation! "+prenom+" "+nom+" est inscrit(e) avec succès pour le cours "+cours.getCode()+"!";
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
                 alert.showAndWait();
+                effaceInfo = true;
             }
             else
             {
+                effaceInfo = false;
                 AfficherErreur();
             }
 
@@ -164,11 +212,19 @@ public class ClientFX extends Application {
         {
             ex.printStackTrace();
         }
-        catch (ArrayIndexOutOfBoundsException ex)
+        catch (IndexOutOfBoundsException ex)
         {
-            System.out.println("No session selected");
+            listeErreur.add("Le formulaire est invalide.\nVous devez sélectionner un cours!");
+            effaceInfo = false;
+            AfficherErreur();
         }
     }
+
+    /**
+     * Cette fonction met à jour la table des cours
+     * @param tableView la table en question
+     * @return la table modifié
+     */
     private TableView Update(TableView tableView)
     {
         tableView.getItems().clear();
@@ -184,6 +240,10 @@ public class ClientFX extends Application {
         tableView.refresh();
         return tableView;
     }
+
+    /**
+     * Cette fonction affiche a l'utilisateur les erreurs dans le remplissage de formulaire.
+     */
     private void AfficherErreur()
     {
         String messageTotal = "";
@@ -193,7 +253,16 @@ public class ClientFX extends Application {
         }
         Alert alert = new Alert(Alert.AlertType.ERROR, messageTotal, ButtonType.OK);
         alert.showAndWait();
+        listeErreur.clear();
     }
+
+    /**
+     * Cette fonction vérifie si l'email et la matricule entré respecte les conditions.
+     * L'email doit finir par @gmail.com
+     * La matricule doit contenir exactement 8 chiffre.
+     * @param email Un string représentant le email de l'utilisateur
+     * @param matricule Un string représentant la matricule de l'utilisateur.
+     */
     private void VerifierInfo(String email, String matricule)
     {
         String verificationEmail = "@gmail.com";
@@ -229,6 +298,10 @@ public class ClientFX extends Application {
             listeErreur.add("Le champ'Matricule' est invalide!\nAssurer vous que la matricule contienne exactement 8 chiffres.");
         }
     }
+
+    /**
+     * Fonction qui launch la classe. Utilisé pour contourner un bug avec le jar
+     */
 
     public static void applicationLauch()
     {

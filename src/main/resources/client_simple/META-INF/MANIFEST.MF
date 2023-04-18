@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Main-Class: client_simple.ClientSimple
+Class-Path: javafx-fxml-19.jar javafx-graphics-19-mac.jar javafx-control
+ s-19-mac.jar javafx-controls-19.jar javafx-fxml-19-mac.jar javafx-base-
+ 19-mac.jar javafx-graphics-19.jar javafx-base-19.jar
+
