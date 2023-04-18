@@ -200,6 +200,10 @@ public class ClientFX extends Application {
         int longeurEmail = email.length();
         int longeurverif = verificationEmail.length();
         boolean valide = true;
+        if(longeurEmail < longeurverif)
+        {
+            listeErreur.add("Le formulaire est invalide.\nLe champ'Email' est invalide!\nAssurer vous que le email finisse par @gmail.com.");
+        }
         for(int i = 0; i<longeurverif; ++i)
         {
             valide = valide && (verificationEmail.charAt(i) == email.charAt(longeurEmail-longeurverif+i));
